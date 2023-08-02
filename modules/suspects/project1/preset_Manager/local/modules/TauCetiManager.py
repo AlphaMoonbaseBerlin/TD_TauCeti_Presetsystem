@@ -2,8 +2,8 @@
 Name : TauCetiManager
 Author : Wieland@AMB-ZEPH15
 Version : 0
-Build : 2
-Savetimestamp : 2023-07-26T10:59:53.291718
+Build : 3
+Savetimestamp : 2023-08-02T23:07:34.984579
 Saveorigin : TauCetiV4.toe
 Saveversion : 2022.32660
 Info Header End'''
@@ -69,7 +69,16 @@ class TauCetiManager:
 
 		#checking for existing preset
 		existing_preset 	= self.preset_folder.op( preset_id ) 
-		
+		if existing_preset:
+			handle_override = self.ownerComp.par.Handleoverride.eval()
+			if handle_override == "Request":
+				if not ui.messageBox(
+					"Override Preset",
+					f"You are about to override the preset with the name {name} and id {preset_id}. Are you sure?",
+					buttons = ["Cancel", "Ok"]
+				): return
+			if handle_override == "Exception":
+				raise Exception(f"Preset {preset_id} {name} already exists!")
 		#calling update or create, depending on if a preset already exists. 
 		preset_comp 		= (self._update_preset if existing_preset else self._create_preset)(name, tag, preset_id)
 
