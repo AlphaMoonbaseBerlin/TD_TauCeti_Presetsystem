@@ -1,9 +1,7 @@
+
 '''Info Header Start
 Name : parse_par
 Author : Wieland@AMB-ZEPH15
-Version : 0
-Build : 3
-Savetimestamp : 2023-08-03T10:13:11.598178
 Saveorigin : TauCetiV4.toe
 Saveversion : 2022.32660
 Info Header End'''

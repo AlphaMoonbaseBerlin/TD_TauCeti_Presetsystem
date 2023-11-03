@@ -1,9 +1,7 @@
+
 '''Info Header Start
 Name : TauCetiManager
 Author : Wieland@AMB-ZEPH15
-Version : 0
-Build : 3
-Savetimestamp : 2023-08-02T23:07:34.984579
 Saveorigin : TauCetiV4.toe
 Saveversion : 2022.32660
 Info Header End'''

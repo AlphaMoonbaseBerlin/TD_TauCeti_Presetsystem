@@ -1,9 +1,7 @@
+
 '''Info Header Start
 Name : extDashboard
 Author : Wieland@AMB-ZEPH15
-Version : 0
-Build : 2
-Savetimestamp : 2023-07-26T11:00:09.085041
 Saveorigin : TauCetiV4.toe
 Saveversion : 2022.32660
 Info Header End'''

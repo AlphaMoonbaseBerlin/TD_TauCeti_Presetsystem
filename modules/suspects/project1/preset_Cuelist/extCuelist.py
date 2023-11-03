@@ -1,9 +1,7 @@
+
 '''Info Header Start
 Name : extCuelist
 Author : Wieland@AMB-ZEPH15
-Version : 0
-Build : 3
-Savetimestamp : 2023-07-26T11:13:36.490548
 Saveorigin : TauCetiV4.toe
 Saveversion : 2022.32660
 Info Header End'''
