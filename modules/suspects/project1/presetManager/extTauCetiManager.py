@@ -1,13 +1,12 @@
-
 '''Info Header Start
-Name : TauCetiManager
+Name : extTauCetiManager
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
 Saveversion : 2022.32660
 Info Header End'''
 TDFunctions = op.TDModules.mod.TDFunctions
 import uuid
-class TauCetiManager:
+class extTauCetiManager:
 
 	def __init__(self, ownerComp):
 		# The component to which this extension is attached

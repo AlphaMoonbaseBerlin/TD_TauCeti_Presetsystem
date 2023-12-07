@@ -1,6 +1,6 @@
 
 '''Info Header Start
-Name : parse_par
+Name : ParUtils
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
 Saveversion : 2022.32660
