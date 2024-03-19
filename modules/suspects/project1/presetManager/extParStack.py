@@ -1,14 +1,13 @@
-
 '''Info Header Start
-Name : ParStack
+Name : extParStack
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
 Saveversion : 2022.32660
 Info Header End'''
 
-import parse_par
+import ParUtils
 
-class ParStack:
+class extParStack:
 	"""
 	extParStack description
 	"""
