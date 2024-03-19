@@ -100,8 +100,9 @@ class extCuelist:
 			cue_time
 		)
 	
-		self.ownerComp.op('cue_timer').par.length = cue_time
-		self.ownerComp.op('cue_timer').par.start.pulse()
+		self.ownerComp.op("event1").createEvent(
+			attackTime = cue_time, 
+		)
 
 	def Assign_Preset(self, id, preset):
 		self.cue_table[ id, "preset"].val = preset
