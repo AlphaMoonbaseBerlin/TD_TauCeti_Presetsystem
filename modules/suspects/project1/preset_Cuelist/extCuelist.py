@@ -93,6 +93,7 @@ class extCuelist:
 		self.Select_Next_Cue()
 
 		self.ownerComp.op("callbackManager").Do_Callback(
+			"onGo",
 			cue_id,
 			self.selected_cue,
 			preset_id,
@@ -100,8 +101,27 @@ class extCuelist:
 			cue_time
 		)
 	
-		self.ownerComp.op("event1").createEvent(
-			attackTime = cue_time, 
+		eventId = self.ownerComp.op("event1").createEvent(
+			attackTime = cue_time
+		)
+		self.ownerComp.op("recalled_cues").appendRow(
+			[eventId, cue_id]
+		)
+
+	def _finalize_cue(self, eventId):
+		cueIdCell = self.ownerComp.op("recalled_cues")[str(int(eventId)), 1]
+		if cueIdCell is None: return
+		cueId = cueIdCell.val
+		self.ownerComp.op("recalled_cues").deleteRow( str(int(eventId)) )
+		presetIdCell = self.Data[cueId, "preset" ]
+		if presetIdCell is None: return
+		presetId = presetIdCell.val
+		presetName = self.get_engine().Get_Preset_Name(presetId)
+		self.ownerComp.op("callbackManager").Do_Callback(
+			"onDone",
+			cueId,
+			presetId,
+			presetName
 		)
 
 	def Assign_Preset(self, id, preset):
