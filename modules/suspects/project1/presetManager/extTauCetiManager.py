@@ -7,6 +7,10 @@ Info Header End'''
 
 TDFunctions = op.TDModules.mod.TDFunctions
 import uuid
+
+class PresetDoesNotExist(Exception):
+	pass
+
 class extTauCetiManager:
 
 	def __init__(self, ownerComp):
@@ -14,11 +18,13 @@ class extTauCetiManager:
 		self.ownerComp 		= ownerComp
 		self.stack     		= self.ownerComp.op('stack')
 		self.tweener   		= self.ownerComp.op('olib_dependancy').Get_Component()
-
+		
 		self.modeler 		= self.ownerComp.op('modeler')
 		self.preview 		= self.ownerComp.op("previews")
 		self.logger 		= self.ownerComp.op("logger")
 		self.prefab 		= self.ownerComp.op("presetPrefab")
+
+		self.PresetDoesNotExist = PresetDoesNotExist
 
 	@property
 	def preset_folder(self):
@@ -133,8 +139,10 @@ class extTauCetiManager:
 
 	def Recall_Preset(self, id, time, curve = "s", load_stack = False):
 		preset_comp = self.preset_folder.op( id )
+		if not preset_comp: 
+			if self.ownerComp.par.Raiseexceptiononnopreset.eval(): raise self.PresetDoesNotExist()
+			return
 		self.ownerComp.op("callbackManager").Do_Callback("onPresetRecall", preset_comp.par.Name.eval(), preset_comp.par.Tag.eval(), preset_comp.name)
-		if not preset_comp: return
 		if load_stack: self.Preset_To_Stack( id )
 
 		for target_dict in self.modeler.Table_To_List( preset_comp.op("values") ):
