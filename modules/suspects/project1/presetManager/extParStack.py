@@ -2,10 +2,12 @@
 Name : extParStack
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
-Saveversion : 2022.32660
+Saveversion : 2022.35320
 Info Header End'''
 
 import ParUtils
+class InvalidOperator( Exception):
+	pass
 
 class extParStack:
 	"""
@@ -25,6 +27,7 @@ class extParStack:
 			self.ownerComp.par['x']
 		except:
 			self.get_par = self.get_par_attr
+
 	@property 
 	def relation(self):
 		return self.ownerComp.par.Pathrelation.eval()
@@ -47,7 +50,9 @@ class extParStack:
 
 	def get_op_from_path(self, path):
 		self.ownerComp.par.Oppath = path
-		return self.ownerComp.par.Oppath.eval()
+		targetOperator = self.ownerComp.par.Oppath.eval()#
+		if targetOperator is None: raise InvalidOperator(f"Operator {path} does not exist!")
+		return targetOperator
 
 	def Get_Parameter(self, op_path, parameter_name):
 		return self.get_par( op_path, parameter_name)
@@ -88,7 +93,7 @@ class extParStack:
 			"type" 		: row[4].val,
 			"preload" 	: row[3].val,
 			"par" 		: parameter,
-			"val" 		: parse_par.parse( parameter ) if (parameter.mode != ParMode.EXPRESSION) else 0,
+			"val" 		: ParUtils.parse( parameter ) if (parameter.mode != ParMode.EXPRESSION) else 0,
 			"parName" 	: parameter.name,
 			"parOwner"	: row[1].val,
 			"mode"		: parameter.mode.name,

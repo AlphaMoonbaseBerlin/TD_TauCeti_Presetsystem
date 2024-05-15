@@ -2,12 +2,12 @@
 Name : extTauCetiManager
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
-Saveversion : 2022.32660
+Saveversion : 2022.35320
 Info Header End'''
 
 TDFunctions = op.TDModules.mod.TDFunctions
 import uuid
-
+from extParStack import InvalidOperator
 class PresetDoesNotExist(Exception):
 	pass
 
@@ -146,8 +146,17 @@ class extTauCetiManager:
 		if load_stack: self.Preset_To_Stack( id )
 
 		for target_dict in self.modeler.Table_To_List( preset_comp.op("values") ):
-			parameter = self.stack.Get_Parameter( 	target_dict["parOwner"], 
-													target_dict["parName"] )
+			try:
+				parameter = self.stack.Get_Parameter( 	target_dict["parOwner"], 
+														target_dict["parName"] )
+			except InvalidOperator as e:
+				invalidHandleMode = self.ownerComp.par.Handleinvalidoperator.eval()
+				if invalidHandleMode == "Remove":
+					preset_comp.op("values").deleteRow( target_dict["id"] )
+				elif invalidHandleMode == "Raise Exception":
+					raise e
+				continue
+				
 
 			if parameter is None: 
 				self.logger.Log("Could not find Parameter stored in Preset", id, target_dict["parOwner"], target_dict["parName"])
