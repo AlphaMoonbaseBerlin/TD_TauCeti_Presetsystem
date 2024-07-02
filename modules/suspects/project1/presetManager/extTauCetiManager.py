@@ -23,7 +23,7 @@ class extTauCetiManager:
 		self.preview 		= self.ownerComp.op("previews")
 		self.logger 		= self.ownerComp.op("logger")
 		self.prefab 		= self.ownerComp.op("presetPrefab")
-
+		self.Record_Preset	= self.Store_Preset
 		self.PresetDoesNotExist = PresetDoesNotExist
 
 	@property
@@ -196,3 +196,9 @@ class extTauCetiManager:
 			self.Preset_To_Stack( new_preset_id )
 			self.Recall_Preset( new_preset_id, 0 )
 			self.Store_Preset( name, tag = tag, id = new_preset_id )
+
+	@property
+	def PresetParMenuObject(self):
+		return tdu.TableMenu(
+			self.ownerComp.op("id_to_name"), labelCol = "name"
+		)
