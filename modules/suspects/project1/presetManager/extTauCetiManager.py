@@ -30,8 +30,8 @@ class extTauCetiManager:
 		# The component to which this extension is attached
 		self.ownerComp 		= ownerComp
 		self.stack     		= self.ownerComp.op('stack')
-		self.tweener   		= self.ownerComp.op('olib_dependancy').Get_Component()
-		
+		# self.tweener   		= self.ownerComp.op('olib_dependancy').Get_Component()
+		self.tweener 		= self.ownerComp.op("remote_dependency").GetGlobalComponent()
 		self.modeler 		= self.ownerComp.op('modeler')
 		self.preview 		= self.ownerComp.op("previews")
 		self.logger 		= self.ownerComp.op("logger")
