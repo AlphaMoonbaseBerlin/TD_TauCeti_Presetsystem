@@ -8,6 +8,19 @@ Info Header End'''
 TDFunctions = op.TDModules.mod.TDFunctions
 import uuid
 from extParStack import InvalidOperator
+
+def snakeCaseToCamelcase( classObject ):
+	import inspect
+	from optparse import OptionParser
+	for methodName, methodObject in inspect.getmembers(OptionParser, predicate=inspect.isfunction) :
+		if methodName[0].isupper():
+			setattr( 
+				classObject, 
+				"".join( word.capitalize() for word in methodName.split("_")),
+				methodObject
+			)
+
+
 class PresetDoesNotExist(Exception):
 	pass
 
@@ -25,6 +38,7 @@ class extTauCetiManager:
 		self.prefab 		= self.ownerComp.op("presetPrefab")
 		self.Record_Preset	= self.Store_Preset
 		self.PresetDoesNotExist = PresetDoesNotExist
+		snakeCaseToCamelcase( self )
 
 	@property
 	def preset_folder(self):
@@ -139,10 +153,18 @@ class extTauCetiManager:
 
 	def Recall_Preset(self, id, time, curve = "s", load_stack = False):
 		preset_comp = self.preset_folder.op( id )
+
 		if not preset_comp: 
 			if self.ownerComp.par.Raiseexceptiononnopreset.eval(): raise self.PresetDoesNotExist()
-			return
-		self.ownerComp.op("callbackManager").Do_Callback("onPresetRecall", preset_comp.par.Name.eval(), preset_comp.par.Tag.eval(), preset_comp.name)
+			return False
+		
+		self.ownerComp.op("callbackManager").Do_Callback(
+			"onPresetRecall", 
+			preset_comp.par.Name.eval(), 
+			preset_comp.par.Tag.eval(), 
+			preset_comp.name
+		)
+
 		if load_stack: self.Preset_To_Stack( id )
 
 		for target_dict in self.modeler.Table_To_List( preset_comp.op("values") ):
@@ -156,10 +178,14 @@ class extTauCetiManager:
 				elif invalidHandleMode == "Raise Exception":
 					raise e
 				continue
-				
 
 			if parameter is None: 
-				self.logger.Log("Could not find Parameter stored in Preset", id, target_dict["parOwner"], target_dict["parName"])
+				self.logger.Log(
+					"Could not find Parameter stored in Preset", 
+					id, 
+					target_dict["parOwner"],
+					target_dict["parName"]
+				)
 				continue
 			self.tweener.CreateTween(	parameter, 
 										target_dict["val"], 
@@ -169,6 +195,7 @@ class extTauCetiManager:
 										id 		= preset_comp, 
 										mode 	= target_dict["mode"], 
 										expression = target_dict["expression"] )
+		return True
 	
 	def Rename(self, id, new_name ):
 		preset_comp = self.preset_folder.op( id )
