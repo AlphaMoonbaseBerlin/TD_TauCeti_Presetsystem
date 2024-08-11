@@ -118,6 +118,7 @@ class extTweener:
 		fadeObject.Delay( delay )
 		#self.Tweens[id or self.getFadeId( parameter )] = fadeObject
 		self.Tweens[self.getFadeId( parameter )] = fadeObject
+		fadeObject.Step( stepsize = 0 )
 		
 
 	def StopFade(self,par):
