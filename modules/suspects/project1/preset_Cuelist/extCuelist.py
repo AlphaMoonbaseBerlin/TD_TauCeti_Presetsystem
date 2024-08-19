@@ -1,9 +1,10 @@
 
+
 '''Info Header Start
 Name : extCuelist
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
-Saveversion : 2022.32660
+Saveversion : 2022.35320
 Info Header End'''
 class extCuelist:
 	"""
@@ -13,26 +14,26 @@ class extCuelist:
 		# The component to which this extension is attached
 		self.ownerComp = ownerComp
 		#self.cue_table = self.ownerComp.op('cuelist')
-		self.selected_cue = ''
-		self.active_cue = ''
-		self.update_states()
-		if self.ownerComp.par.Manager.eval() is not None: self.Recall_Cue( self.active_cue, time = 0 )
+		
+		# if self.ownerComp.par.Manager.eval() is not None: self.Recall_Cue( "", time = 0 )
+	
 	@property
 	def cue_table(self):
 		return self.Data
 	
 	@property
+	def selected_cue(self):
+		return self.ownerComp.par.Selectedcue.eval()
+	
+	@property
 	def Data(self):
 		return self.ownerComp.op("repo_maker").Repo
-	
-	def update_states(self):
-		for row in self.cue_table.rows()[1:]:
-			if row[1].val: self.selected_cue = row[0].val
-			if row[2].val: self.active_cue   = row[0].val
-
 
 	def get_engine(self):
 		return self.ownerComp.par.Manager.eval()
+
+	def UpdateTime(self, cueId, newTime):
+		self.cue_table[cueId, "time"].val = newTime
 
 	def Reordered(self, destination):
 		
@@ -58,13 +59,7 @@ class extCuelist:
 		return self.cue_table[id, 0].row if self.cue_table[id, 0] else ''
 
 	def Select_Cue(self, id):
-		if (id == "id"): raise Exception( "id is an invalid CueID. Just use anything else except id, as a word. It destroys everything....")
-		if self.cue_table[ str(id), 0] is None: return
-		if self.cue_table[ self.selected_cue, "id"]: self.cue_table[ self.selected_cue, "selected"].val = self.cue_table[ self.selected_cue, 1].val.replace( "s", '')
-
-		self.selected_cue = str(id)
-
-		self.cue_table[self.selected_cue, "selected"].val += "s"
+		self.ownerComp.par.Selectedcue.val = id
 		return
 	
 	@property
@@ -72,23 +67,22 @@ class extCuelist:
 		return self.ownerComp.par.Loop.eval()
 
 	def Select_Next_Cue(self):
-		next_row_index 	= self.id_to_rowindex( self.selected_cue ) + 1 or 1
-		if self.loop: next_row_index %= self.cue_table.numRows
-		#we have to make sure to never use row 0!
-		next_cue 		= self.cue_table[ next_row_index or 1, "id"]
-		if next_cue: self.Select_Cue( next_cue.val )
+		nextCueIndex = self.ownerComp.par.Selectedcue.menuIndex + 1
+		if self.loop: nextCueIndex %= len( self.ownerComp.par.Selectedcue.menuNames )
+	
+		self.Select_Cue( 
+			self.ownerComp.par.Selectedcue.menuNames[ nextCueIndex ]
+		)
 	
 
 	def Recall_Cue(self, cue_id, time = None):
-		row = self.cue_table.row( cue_id )
-		if not row: return
-		preset_id = row[3].val
-		cue_time = time if time is not None else float( row[4])
+		
+		preset_id = self.cue_table[cue_id, "preset"].val
+
+		cue_time = time if time is not None else float( self.cue_table[cue_id, "time"].val)
 		if preset_id: self.get_engine().Recall_Preset( preset_id, cue_time )
 
-		if self.cue_table[ self.active_cue, "active"] : self.cue_table[ self.active_cue, "active"].val = ""
-		self.active_cue = cue_id
-		self.cue_table[ self.active_cue, "active"].val = "a"
+		self.ownerComp.par.Activecue.val = cue_id
 		self.Select_Cue( cue_id )
 		self.Select_Next_Cue()
 
