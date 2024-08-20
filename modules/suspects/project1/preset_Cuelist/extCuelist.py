@@ -39,10 +39,6 @@ class extCuelist:
 			nextIndex = targetIndex + 1
 			prevIndex = targetIndex
 
-		sourceItem = self.data.GetItem( 
-			sourceIndex,
-			rows = "id"
-	    )
 		nextItem = self.data.GetItem( 
 			min( nextIndex , self.data.NumItems ),
 			rows = "id"
@@ -52,11 +48,11 @@ class extCuelist:
 			max(1, prevIndex  ),
 			rows = "id"
 		)
-		
+		debug( prevItem )
 		prev_index = float(prevItem["id"]) * bool(prevItem["_tableIndex"] != 1)
-		next_index = float(nextItem["id"]) + 2* ( nextItem["_tableIndex"] >= self.data.NumItems )
+		next_index = float(nextItem["id"]) + 2 * bool(nextItem["_tableIndex"] == self.data.NumItems)
+		
 
-		debug( nextItem["_tableIndex"], self.data.NumItems )
 		new_id = f"{(next_index + prev_index) / 2:.2f}"
 
 		self.data.UpdateItem(sourceIndex, {
@@ -73,7 +69,9 @@ class extCuelist:
 
 	def Append_Cue(self, preset, time = 5):
 		self.data.AddItem({
-			"id" : math.floor( float(self.data.GetItem(-1)["id"]))+1,
+			"id" : math.floor( 
+				float(self.data.GetItem(-1)["id"])
+			) + 1 if self.data.NumItems else "1",
 			"preset" : preset,
 			"time" : time
 		})
@@ -95,6 +93,7 @@ class extCuelist:
 		return
 
 	def Select_Next_Cue(self):
+		if not self.data.NumItems: return
 		nextCueIndex = self.ownerComp.par.Activecue.menuIndex + 1
 		if self.loop: nextCueIndex %= len( self.ownerComp.par.Selectedcue.menuNames )
 		self.Select_Cue( 
