@@ -63,8 +63,9 @@ class fade( _tween ):
 class endsnap( _tween ):
 
 	def Step(self, stepsize:float = None):
+		
 		self._incrementStep(stepsize)
-		if self.done: self.Finish
+		if self.done: self.Finish()
 
 	def Finish(self):
 		self.targetValue.assignToPar( self.parameter )
@@ -75,4 +76,7 @@ class startsnap( _tween ):
 	def Step(self, stepsize:float = None):
 		self.targetValue.assignToPar( self.parameter )
 		self._incrementStep(stepsize)
+		if self.done: self.Finish()
 
+	def Finish(self):
+		self._callback( self )
