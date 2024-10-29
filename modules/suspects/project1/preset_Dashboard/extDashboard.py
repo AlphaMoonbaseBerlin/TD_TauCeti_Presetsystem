@@ -30,7 +30,7 @@ class extDashboard:
 
 	@property
 	def bank_comp(self):
-		return self.ownerComp.par.Selectedbank.eval() or self.Banks.findChildren(depth=1)[0]
+		return op(self.ownerComp.par.Selectedbank.eval()) or self.Banks.findChildren(depth=1)[0]
 
 	@property
 	def map_table(self):
