@@ -3,7 +3,7 @@
 Name : extDashboard
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
-Saveversion : 2022.32660
+Saveversion : 2022.35320
 Info Header End'''
 import uuid
 
@@ -21,6 +21,12 @@ class extDashboard:
 	def Banks(self):
 		return self.ownerComp.op("repo_maker").Repo
 
+	@property
+	def bankParDefinition(self):
+		return tdu.ParMenu(
+			[child for child in self.Banks.findChildren(depth = 1, type = COMP)],
+			[child.name for child in self.Banks.findChildren(depth = 1, type = COMP)]
+		)
 
 	@property
 	def bank_comp(self):
