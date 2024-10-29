@@ -155,7 +155,8 @@ class extTauCetiManager:
 		preset_comp = self.preset_folder.op( id )
 
 		if not preset_comp: 
-			if self.ownerComp.par.Raiseexceptiononnopreset.eval(): raise self.PresetDoesNotExist()
+			if self.ownerComp.par.Handlenopreset.eval() == "Raise Exception": 
+				raise self.PresetDoesNotExist()
 			return False
 		
 		self.ownerComp.op("callbackManager").Do_Callback(
@@ -200,7 +201,13 @@ class extTauCetiManager:
 	def Rename(self, id, new_name ):
 		preset_comp = self.preset_folder.op( id )
 		if not preset_comp: return
-		preset_comp.par.Name = new_name
+		
+		if self.ownerComp.par.Renamemode.eval() == "Replace ID":
+			new_name = tdu.legalName( new_name )
+			preset_comp.name 			= new_name
+			preset_comp.par.Name.val 	= new_name
+		else:
+			preset_comp.par.Name 		= new_name
 		return preset_comp
 
 
