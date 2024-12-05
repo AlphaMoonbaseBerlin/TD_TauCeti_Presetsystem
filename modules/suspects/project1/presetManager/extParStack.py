@@ -2,7 +2,7 @@
 Name : extParStack
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
-Saveversion : 2022.35320
+Saveversion : 2023.11880
 Info Header End'''
 
 import ParUtils
@@ -91,7 +91,7 @@ class extParStack:
 		return {
 			"id"		: row[0].val,
 			"type" 		: row[4].val,
-			"preload" 	: row[3].val,
+			"preload" 	: row[3].val == "True",
 			"par" 		: parameter,
 			"val" 		: ParUtils.parse( parameter ) if (parameter.mode != ParMode.EXPRESSION) else 0,
 			"parName" 	: parameter.name,
@@ -100,6 +100,8 @@ class extParStack:
 			"expression": parameter.expr if (parameter.mode == ParMode.EXPRESSION) else None,
 			"relation"	: self.relation,
 		}
+	
+	
 	def Refresh_Stack(self):
 		temp_list = self.Get_Stack_Dict_List()
 		self.Clear_Stack()

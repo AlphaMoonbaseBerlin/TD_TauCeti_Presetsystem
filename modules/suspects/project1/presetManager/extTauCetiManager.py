@@ -2,7 +2,7 @@
 Name : extTauCetiManager
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
-Saveversion : 2022.35320
+Saveversion : 2023.11880
 Info Header End'''
 
 TDFunctions = op.TDModules.mod.TDFunctions
@@ -105,7 +105,7 @@ class extTauCetiManager:
 		
 		#aranging the node
 		TDFunctions.arrangeNode( preset_comp )
-
+		
 		#writing stack to preset-table
 		self.modeler.List_To_Table( preset_comp.op("values"), 
 									self.stack.Get_Stack_Dict_List() )
@@ -150,6 +150,18 @@ class extTauCetiManager:
 								fade_type = target_dict["type"] )
 			except AttributeError:
 				continue
+
+
+	def Push_Stack_To_Presets(self, mode = "keep"):
+		stackData = { stackElement["id"] : stackElement for stackElement in self.stack.Get_Stack_Dict_List() }
+		for preset_comp in self.preset_folder.findChildren(depth = 1):
+			updateData = { stackElement["id"] : stackElement for stackElement in self.modeler.Table_To_List( preset_comp.op("values") ) }
+			for key, value in stackData.items():
+				if key in updateData and mode == "keep": continue
+				updateData[key] = value
+			self.modeler.List_To_Table( preset_comp.op("values"), 
+										updateData.values() )
+		return
 
 	def Recall_Preset(self, id, time, curve = "s", load_stack = False):
 		preset_comp = self.preset_folder.op( id )
@@ -210,7 +222,9 @@ class extTauCetiManager:
 			preset_comp.par.Name 		= new_name
 		return preset_comp
 
-
+	"""
+		Utility Functions
+	"""
 	def Import_V3_Presets(self, path = ""):
 		filepath = path or ui.chooseFile( fileTypes = [".tox"] )
 		if not filepath: return
