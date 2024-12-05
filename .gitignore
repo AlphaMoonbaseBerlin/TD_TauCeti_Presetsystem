@@ -1,2 +1,6 @@
 
 Lib
+typings/__builtins__.pyi
+typings/entryDefinition.pyi
+typings/extDictParser.pyi
+typings/extStubser.pyi
