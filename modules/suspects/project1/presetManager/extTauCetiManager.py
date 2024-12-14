@@ -2,12 +2,14 @@
 Name : extTauCetiManager
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
-Saveversion : 2022.35320
+Saveversion : 2023.11880
 Info Header End'''
 
 TDFunctions = op.TDModules.mod.TDFunctions
 import uuid
 from extParStack import InvalidOperator
+from typing import Literal, Union
+
 
 def snakeCaseToCamelcase( classObject ):
 	import inspect
@@ -210,7 +212,29 @@ class extTauCetiManager:
 			preset_comp.par.Name 		= new_name
 		return preset_comp
 
+	def Push_Stack_To_Presets(self, 
+						   mode:Literal["keep", "overwrite"] 		= "keep", 
+						   _stackelements:Union[str, list, tuple] 	= "*", 
+						   _presets:Union[str, list, tuple] 			= "*"):
+		stackelements = " ".join( _stackelements ) if isinstance(_stackelements, (list, tuple)) else _stackelements
+		presets = " ".join( _presets ) if isinstance(_presets, (list, tuple)) else _presets
 
+		_stackData = { stackElement["id"] : stackElement for stackElement in self.stack.Get_Stack_Dict_List() }
+		stackData = { key : _stackData[key] for key in tdu.match( stackelements, list(_stackData.keys()) )}
+		presetNames = tdu.match( presets, [ operator.name for operator in self.preset_folder.findChildren(depth = 1) ] )
+		for presetName in presetNames:
+			preset_comp = self.preset_folder.op( presetName )
+			updateData = { stackElement["id"] : stackElement for stackElement in self.modeler.Table_To_List( preset_comp.op("values") ) }
+			for key, value in stackData.items():
+				if key in updateData and mode == "keep": continue
+				updateData[key] = value
+			self.modeler.List_To_Table( preset_comp.op("values"), 
+										updateData.values() )
+		return
+	
+	"""
+		Utility Functions and not part of the logic. Should maybe live outside.
+	"""
 	def Import_V3_Presets(self, path = ""):
 		filepath = path or ui.chooseFile( fileTypes = [".tox"] )
 		if not filepath: return
