@@ -6,12 +6,14 @@
 Name : extTweener
 Author : Wieland@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
-Saveversion : 2022.35320
+Saveversion : 2023.11880
 Info Header End'''
 
 import fade
 import tween_value
 import tweener_exceptions
+
+from asyncio import sleep as asyncSleep
 
 from typing import Callable, Union, Hashable, Dict, List, Literal
 from argparse import Namespace
@@ -97,6 +99,21 @@ class extTweener:
 		self.CreateTween(parameter, end, time, curve = curve, delay = delay, callback = callback)
 		return
 	
+	async def CreateTween_Async(self,parameter, 
+					end		:float, 
+					time	:float, 
+					type	:str				= 'fade', 
+					curve	:str				= 's', 
+					mode	:Union[str, ParMode]= 'CONSTANT', 
+					expression	:str			= None, 
+					delay		:float			= 0.0,
+					callback	:Callable		= _emptyCallback,
+					id		:Hashable			= '',  ):
+		tweenObject = self.CreateTween( parameter, end, time, type, curve, mode, expression, delay, callback, id)
+		while not tweenObject.done:
+			await asyncSleep(0)
+		return tweenObject
+		
 	def CreateTween(self,parameter, 
 					end		:float, 
 					time	:float, 
@@ -119,6 +136,7 @@ class extTweener:
 		#self.Tweens[id or self.getFadeId( parameter )] = fadeObject
 		self.Tweens[self.getFadeId( parameter )] = fadeObject
 		fadeObject.Step( stepsize = 0 )
+		return fadeObject
 		
 
 	def StopFade(self,par):
