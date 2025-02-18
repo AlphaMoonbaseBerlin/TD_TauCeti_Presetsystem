@@ -46,7 +46,10 @@ class extTauCetiManager:
 	def preset_folder(self):
 		return self.ownerComp.op("repo_maker").Repo
 
-	def Find_Presets(self, name="", tag=""):
+	def Find_Presets(self, name:str="", tag:str="") -> list[str]:
+		"""
+			Returns a list IDs of presets given the defined parameters.
+		"""
 		return_values = []
 		for child in self.preset_folder.findChildren(depth = 1):
 			if name and child.par.Name.eval() != name: continue
@@ -54,10 +57,16 @@ class extTauCetiManager:
 			return_values.append( child.name )
 		return return_values
 
-	def Export_Presets(self, path):
+	def Export_Presets(self, path:str):
+		"""
+			Save the preset as a TOX for the given path.
+		"""
 		self.preset_folder.save( path, createFolders = True )
 
-	def Import_Presets(self, path):
+	def Import_Presets(self, path:str):
+		"""
+			Load a TOX as the external presets.
+		"""
 		self.preset_folder.par.externaltox = path
 		self.preset_folder.par.reinitnet.pulse()
 
@@ -69,17 +78,30 @@ class extTauCetiManager:
 		prefab.op("preview").lock = self.ownerComp.par.Storepreviews.eval()
 		prefab.op("preview").par.top = ""
 
-	def Get_Preset_Comp(self, id) :
+	def Get_Preset_Comp(self, id) -> COMP :
+		"""
+			Returns the COMP defining the presets given the ID.
+		"""
 		return self.preset_folder.op(id) or self.ownerComp.op("emptyPreset")
 
-	def Get_Preset_Name(self, id):
+	def Get_Preset_Name(self, id:str) -> str:
+		"""
+			Return the Name of a Preset by ID.
+		"""
 		return self.Get_Preset_Comp(id).par.Name.eval()
 
-	def Get_Preview(self, id):
+	def Get_Preview(self, id:str) -> TOP:
+		"""
+			Return the TOP showing the preview of the Presets.
+		"""
+
 		return self.Get_Preset_Comp(id).op("preview")
 
-	def Store_Preset(self, name, tag = '', id = ""):
-		
+	def Store_Preset(self, name:str, tag = '', id = "") -> str:
+		"""
+			Store the Preset unter the given name. 
+			If id is not not supplied the ID will be generated based on Parameters.
+		"""
 		#creating new id if no ID given.
 		if self.ownerComp.par.Idmode.eval() == "Name":
 			name = tdu.legalName( name )
@@ -111,6 +133,10 @@ class extTauCetiManager:
 		#writing stack to preset-table
 		self.modeler.List_To_Table( preset_comp.op("values"), 
 									self.stack.Get_Stack_Dict_List() )
+		
+		# If enabled, we update existing presets with the current stack.
+		if self.ownerComp.par.Pushstacktoallpresets.eval():
+			self.Push_Stack_To_Presets()
 		return preset_id
 
 	def _create_preset(self, name, tag, id):
@@ -131,7 +157,7 @@ class extTauCetiManager:
 															preset_comp.name)
 		return preset_comp
 
-	def Remove_Preset(self, id ):
+	def Remove_Preset(self, id:str ):
 		try:
 			self.preset_folder.op( id ).destroy()
 		except :
@@ -141,7 +167,7 @@ class extTauCetiManager:
 		for preset_comp in self.preset_folder.findChildren( depth = 1):
 			preset_comp.destroy()
 
-	def Preset_To_Stack(self, id):
+	def Preset_To_Stack(self, id:str):
 		preset_comp = self.preset_folder.op( id )
 		if not preset_comp: return
 		self.stack.Clear_Stack()
@@ -153,7 +179,7 @@ class extTauCetiManager:
 			except AttributeError:
 				continue
 
-	def Recall_Preset(self, id, time, curve = "s", load_stack = False):
+	def Recall_Preset(self, id:str, time:float, curve = "s", load_stack = False):
 		preset_comp = self.preset_folder.op( id )
 
 		if not preset_comp: 
@@ -200,7 +226,7 @@ class extTauCetiManager:
 										expression = target_dict["expression"] )
 		return True
 	
-	def Rename(self, id, new_name ):
+	def Rename(self, id:str, new_name:str ):
 		preset_comp = self.preset_folder.op( id )
 		if not preset_comp: return
 		
@@ -216,6 +242,10 @@ class extTauCetiManager:
 						   mode:Literal["keep", "overwrite"] 		= "keep", 
 						   _stackelements:Union[str, list, tuple] 	= "*", 
 						   _presets:Union[str, list, tuple] 			= "*"):
+		"""
+			Pushes all the parameters of the current stack to all presets.
+			When using "overwrite" mode all parameters will b overwritten. CAUTION!
+		"""
 		stackelements = " ".join( _stackelements ) if isinstance(_stackelements, (list, tuple)) else _stackelements
 		presets = " ".join( _presets ) if isinstance(_presets, (list, tuple)) else _presets
 
@@ -232,10 +262,11 @@ class extTauCetiManager:
 										updateData.values() )
 		return
 	
-	"""
-		Utility Functions and not part of the logic. Should maybe live outside.
-	"""
+
 	def Import_V3_Presets(self, path = ""):
+		"""
+			Import the export of an older V3 TauCeti project.
+		"""
 		filepath = path or ui.chooseFile( fileTypes = [".tox"] )
 		if not filepath: return
 		loaded_presets = op("/sys/quiet").loadTox( filepath )
