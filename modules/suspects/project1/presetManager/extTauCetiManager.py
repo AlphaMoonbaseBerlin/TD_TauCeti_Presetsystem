@@ -1,6 +1,6 @@
 '''Info Header Start
 Name : extTauCetiManager
-Author : Wieland@AMB-ZEPH15
+Author : Wieland PlusPlusOne@AMB-ZEPH15
 Saveorigin : TauCetiV4.toe
 Saveversion : 2023.11880
 Info Header End'''
@@ -69,6 +69,7 @@ class extTauCetiManager:
 		"""
 		self.preset_folder.par.externaltox = path
 		self.preset_folder.par.reinitnet.pulse()
+		self.preset_folder.par.externaltox = ""
 
 	def store_prev(self, prefab):
 		prefab.op("preview").par.top = self.ownerComp.op("preview")			
